@@ -3,16 +3,23 @@ import {render} from 'react-dom';
 import { createStore, compose, applyMiddleware } from 'redux';
 import {Provider} from 'react-redux'
 import thunk from 'redux-thunk'
+import createSagaMiddleWare from 'redux-saga'
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { rootReducer } from './redux/rootReducer';
+import { forbiddenWordsMiddleware } from './redux/middleware';
+import { sagaWatcher } from './redux/sagas';
+
+const saga = createSagaMiddleWare()
 
 const store = createStore(rootReducer, compose(
   applyMiddleware(
-    thunk
+    thunk, forbiddenWordsMiddleware, saga
   ),
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 ))
+
+saga.run(sagaWatcher)
 
 const app = (
   <Provider store={store}>
